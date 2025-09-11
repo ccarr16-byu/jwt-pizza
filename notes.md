@@ -13,7 +13,7 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | Verify pizza                                        |delivery.tsx|[POST] /api/order/verify to pizzaFactory|None|
 | View profile page                                   |dinerDashboard.tsx|[GET] /api/order|`SELECT id, franchiseId, storeId, date FROM dinerOrder WHERE dinerId=? LIMIT ${offset},${config.db.listPerPage}` <br/>`SELECT id, menuId, description, price FROM orderItem WHERE orderId=?` |
 | View franchise<br/>(as diner)                       |franchiseDashboard.tsx|[GET] /api/franchise/${user.id}|`SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?` <br/>`SELECT id, name FROM franchise WHERE id in (${franchiseIds.join(',')})`|
-| Logout                                              |                    |                   |              |
+| Logout                                              |logout.tsx|[DELETE] /api/auth|`DELETE FROM auth WHERE token=?`|
 | View About page                                     |                    |                   |              |
 | View History page                                   |                    |                   |              |
 | Login as franchisee<br/>(f@jwt.com, pw: franchisee) |                    |                   |              |
