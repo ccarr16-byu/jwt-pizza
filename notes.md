@@ -17,7 +17,7 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | View About page                                     |about.tsx|None|None|
 | View History page                                   |history.tsx|None|None|
 | Login as franchisee<br/>(f@jwt.com, pw: franchisee) |login.tsx|[PUT] /api/auth|`SELECT * FROM user WHERE email=?` <br/>`SELECT * FROM userRole WHERE userId=?` <br/>`INSERT INTO auth (token, userId) VALUES (?, ?) ON DUPLICATE KEY UPDATE token=token`|
-| View franchise<br/>(as franchisee)                  |                    |[GET] /api/franchise/${user.id}|              |
+| View franchise<br/>(as franchisee)                  |franchiseDashboard.tsx|[GET] /api/franchise/${user.id}|`SELECT userId FROM auth WHERE token=?` <br/>`SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?` <br/>`SELECT id, name FROM franchise WHERE id in (${franchiseIds.join(',')})`|
 | Create a store                                      |                    |                   |              |
 | Close a store                                       |                    |                   |              |
 | Login as admin<br/>(a@jwt.com, pw: admin)           |                    |                   |              |
