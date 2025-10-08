@@ -202,3 +202,8 @@ test('franchisee login', async ({ page }) => {
   await page.getByRole('button', { name: 'Create store' }).click();
   await expect(page.getByRole('textbox', { name: 'store name' })).toBeVisible();
 });
+
+test('register stub', async ({ page }) => {
+  await basicInit(page);await page.getByRole('link', { name: 'Register' }).click();
+  await expect(page.getByText('Welcome to the party')).toBeVisible();
+});
