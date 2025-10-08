@@ -211,7 +211,23 @@ test('admin login', async ({ page }) => {
   await page.getByRole('link', { name: 'Admin' }).click();
 
   await expect(page.locator('h2')).toContainText('Mama Ricci\'s kitchen');
+  await page.getByRole('button', { name: 'Add Franchise' }).click();
+  await expect(page.getByRole('heading')).toContainText('Create franchise');
 });
+
+test('close franchise', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+  await page.getByRole('button', { name: 'Login' }).click();await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible();
+  await page.getByRole('link', { name: 'Admin' }).click();
+
+  await expect(page.locator('h2')).toContainText('Mama Ricci\'s kitchen');
+  await page.locator('tbody:nth-child(4) > .border-neutral-500 > .px-6 > .px-2').click();
+  await expect(page.getByRole('heading')).toContainText('Sorry to see you go');
+});
+
 
 test('franchisee login', async ({ page }) => {
   await basicInit(page);
