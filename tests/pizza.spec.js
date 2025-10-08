@@ -206,4 +206,11 @@ test('franchisee login', async ({ page }) => {
 test('register stub', async ({ page }) => {
   await basicInit(page);await page.getByRole('link', { name: 'Register' }).click();
   await expect(page.getByText('Welcome to the party')).toBeVisible();
+  await page.getByRole('textbox', { name: 'Full name' }).click();
+  await page.getByRole('textbox', { name: 'Full name' }).fill('test');
+  await page.getByRole('textbox', { name: 'Email address' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('test@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).click();
+  await page.getByRole('textbox', { name: 'Password' }).fill('test');
+  await page.getByRole('button', { name: 'Register' }).click();
 });
