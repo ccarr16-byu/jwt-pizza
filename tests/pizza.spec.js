@@ -204,7 +204,8 @@ test('franchisee login', async ({ page }) => {
 });
 
 test('register stub', async ({ page }) => {
-  await basicInit(page);await page.getByRole('link', { name: 'Register' }).click();
+  await basicInit(page);
+  await page.getByRole('link', { name: 'Register' }).click();
   await expect(page.getByText('Welcome to the party')).toBeVisible();
   await page.getByRole('textbox', { name: 'Full name' }).click();
   await page.getByRole('textbox', { name: 'Full name' }).fill('test');
@@ -213,4 +214,12 @@ test('register stub', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Password' }).click();
   await page.getByRole('textbox', { name: 'Password' }).fill('test');
   await page.getByRole('button', { name: 'Register' }).click();
+});
+
+test('click around no login', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'About' }).click();
+  await page.getByRole('link', { name: 'History' }).click();
+  await page.getByRole('contentinfo').getByRole('link', { name: 'Franchise' }).click();
+  await page.getByRole('link', { name: 'Order' }).click();
 });
