@@ -223,3 +223,8 @@ test('click around no login', async ({ page }) => {
   await page.getByRole('contentinfo').getByRole('link', { name: 'Franchise' }).click();
   await page.getByRole('link', { name: 'Order' }).click();
 });
+
+test('check docs', async ({ page }) => {
+  await page.goto('/docs');
+  await expect(page.getByRole('main')).toContainText('JWT Pizza API');
+});
