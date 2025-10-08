@@ -228,3 +228,8 @@ test('check docs', async ({ page }) => {
   await page.goto('/docs');
   await expect(page.getByRole('main')).toContainText('JWT Pizza API');
 });
+
+test('check bad endpoint', async ({ page }) => {
+  await page.goto('/bad');
+  await expect(page.getByRole('heading')).toContainText('Oops');
+});
