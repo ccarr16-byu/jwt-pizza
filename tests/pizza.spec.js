@@ -6,19 +6,24 @@ async function basicInit(page) {
 
   // Authorize login for the given user
   await page.route('*/**/api/auth', async (route) => {
-    const loginReq = route.request().postDataJSON();
-    const user = validUsers[loginReq.email];
-    if (!user || user.password !== loginReq.password) {
-      await route.fulfill({ status: 401, json: { error: 'Unauthorized' } });
-      return;
+    if (route.request().method() === 'DELETE') {
+      const logoutRes = { message: 'logout successful' };
+      await route.fulfill({ json: logoutRes });
+    } else {
+      const loginReq = route.request().postDataJSON();
+      const user = validUsers[loginReq.email];
+      if (!user || user.password !== loginReq.password) {
+        await route.fulfill({ status: 401, json: { error: 'Unauthorized' } });
+        return;
+      }
+      loggedInUser = validUsers[loginReq.email];
+      const loginRes = {
+        user: loggedInUser,
+        token: 'abcdef',
+      };
+      expect(route.request().method()).toBe('PUT');
+      await route.fulfill({ json: loginRes });
     }
-    loggedInUser = validUsers[loginReq.email];
-    const loginRes = {
-      user: loggedInUser,
-      token: 'abcdef',
-    };
-    expect(route.request().method()).toBe('PUT');
-    await route.fulfill({ json: loginRes });
   });
 
   // Return the currently logged in user
@@ -171,7 +176,7 @@ test('login', async ({ page }) => {
 });
 
 test('logout', async ({ page }) => {
-  await page.goto('/');
+  await basicInit(page);
   await page.getByRole('link', { name: 'Login' }).click();
   await page.getByRole('textbox', { name: 'Email address' }).fill('d@jwt.com');
   await page.getByRole('textbox', { name: 'Password' }).fill('diner');
