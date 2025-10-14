@@ -56,7 +56,7 @@ export default function AdminDashboard(props: Props) {
   }
 
   async function deleteUser(user: User) {
-    navigate('/admin-dashboard/close-store', { state: { user: user } });
+    navigate('/admin-dashboard/delete-user', { state: { user: user } });
   }
 
   let response = <NotFound />;
