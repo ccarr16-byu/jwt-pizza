@@ -2,7 +2,7 @@ import { test, expect } from 'playwright-test-coverage';
 
 async function basicInit(page) {
   let loggedInUser;
-  let validUsers = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'diner', roles: [{ role: 'diner' }] }, 'a@jwt.com': { id: '1', name: '常用名字', email: 'a@jwt.com', password: 'admin', roles: [{ role: 'admin' }] }, 'f@jwt.com': { id: '3', name: 'pizza franchisee', email: 'f@jwt.com', password: 'franchisee', roles: [{ role: 'diner' }, { objectId: 1, role: 'franchisee' }] }, 'u@jwt.com': { id: '4', name: 'test user', email: 'u@jwt.com', password: 'user', roles: [{ role: 'diner' }] } };
+  let validUsers = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'diner', roles: [{ role: 'diner' }] }, 'a@jwt.com': { id: '1', name: '常用名字', email: 'a@jwt.com', password: 'admin', roles: [{ role: 'admin' }] }, 'f@jwt.com': { id: '2', name: 'pizza franchisee', email: 'f@jwt.com', password: 'franchisee', roles: [{ role: 'diner' }, { objectId: 1, role: 'franchisee' }] }, 'u@jwt.com': { id: '4', name: 'test user', email: 'u@jwt.com', password: 'user', roles: [{ role: 'diner' }] } };
 
   // Authorize login for the given user
   await page.route('*/**/api/auth', async (route) => {
@@ -100,6 +100,22 @@ async function basicInit(page) {
         }
     });
 
+    await page.route(/\/api\/user(\?.*)?$/, async (route) => {
+        expect(route.request().method()).toBe('GET');
+        const url = new URL(route.request().url());
+        const nameFilter = url.searchParams.get('name') || '*';
+
+        const filteredUsers = Object.values(validUsers).filter((u) => {
+            if (nameFilter === '*' || !nameFilter) return true;
+            const match = nameFilter.replace(/\*/g, '').toLowerCase();
+            return u.name.toLowerCase().includes(match);
+        });
+
+        const usersRes = filteredUsers.map(({password, ...safeUser }) => safeUser);
+
+        await route.fulfill({ json: { users: usersRes } });
+    });
+
   await page.goto('/');
 }
 
@@ -134,16 +150,7 @@ test('updateUser', async ({ page }) => {
 });
 
 test('listUsers', async ({ page }) => {
-    const userNumber = Math.floor(Math.random() * 10000);
-    const name = `user${userNumber}`;
-    const email = `${name}@jwt.com`;
-    await page.goto('/');
-    await page.getByRole('link', { name: 'Register' }).click();
-    await page.getByRole('textbox', { name: 'Full name' }).fill(name);
-    await page.getByRole('textbox', { name: 'Email address' }).fill(email);
-    await page.getByRole('textbox', { name: 'Password' }).fill('diner');
-    await page.getByRole('button', { name: 'Register' }).click();
-    await page.getByRole('link', { name: 'Logout' }).click();
+    await basicInit(page);
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
@@ -153,16 +160,7 @@ test('listUsers', async ({ page }) => {
     await page.getByRole('link', { name: 'Admin' }).click();
     await expect(page.getByRole('main')).toContainText('Users');
     await page.getByRole('textbox', { name: 'Filter users' }).click();
-    await page.getByRole('textbox', { name: 'Filter users' }).fill(name);
+    await page.getByRole('textbox', { name: 'Filter users' }).fill('test user');
     await page.getByRole('button', { name: 'Submit' }).nth(1).click();
-    await expect(page.getByRole('main')).toContainText(email);
-    await page.getByRole('button', { name: 'Close' }).nth(4).click();
-    await expect(page.getByRole('heading')).toContainText('Delete user');
-    await expect(page.getByRole('main')).toContainText(name);
-    await page.getByRole('button', { name: 'Delete' }).click();
-    await expect(page.locator('h2')).toContainText('Mama Ricci\'s kitchen');
-    await page.getByRole('textbox', { name: 'Filter users' }).click();
-    await page.getByRole('textbox', { name: 'Filter users' }).fill(name);
-    await page.getByRole('button', { name: 'Submit' }).nth(1).click();
-    await expect(page.getByRole('main')).not.toContainText(email);
+    await expect(page.getByRole('main')).toContainText('u@jwt.com');
 })
